@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" />
+	<link rel="stylesheet" href="./resources/css/base.css" />
+	<link rel="stylesheet" href="./resources/css/3d-hover.css" />
+</head>
+
+<body>
+	<div class="container-fluid" id="grid" style="margin-top: 40px;">
+		<div class="row">
+		<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
+				<div class="proportionate p3_2 center-container">
+					<div class="content view">
+						<img src="./resources/images/3d_hover/1.jpg" alt="" />
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
+				<div class="proportionate p3_2 center-container">
+					<div class="content view">
+						<img src="./resources/images/3d_hover/2.jpg" alt="" />
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
+				<div class="proportionate p3_2 center-container">
+					<div class="content view">
+						<img src="./resources/images/3d_hover/3.jpg" alt="" />
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
+				<div class="proportionate p3_2 center-container">
+					<div class="content view">
+						<img src="./resources/images/3d_hover/4.jpg" alt="" />
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
+				<div class="proportionate p3_2 center-container">
+					<div class="content view">
+						<img src="./resources/images/3d_hover/5.jpg" alt="" />
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-6 col-sm-4 col-md-4 col-lg-3">
+				<div class="proportionate p3_2 center-container">
+					<div class="content view">
+						<img src="./resources/images/3d_hover/6.jpg" alt="" />
+					</div>
+				</div>
+			</div>
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="proportionate p2_1 center-container">
+					<div class="content view">
+						<img src="./resources/images/3d_hover/7.jpg" alt="" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script>
+		$('#grid .view').each(function() {
+			var $item = $(this);
+			var imgSrc = $item.children('img').attr('src');
+			var container = '<div class="slice-content"><div><img src="' + imgSrc + '" alt="" class="content"></div></div>';
+			var struct = '';
+			struct += '<div class="slice s1">';
+			struct += '    <div class="slice s2">';
+			struct += '        <div class="slice s3">';
+			struct += '            <div class="slice s4">';
+			struct += '                <div class="slice s5">';
+			struct += '                </div>';
+			struct += '            </div>';
+			struct += '        </div>';
+			struct += '    </div>';
+			struct += '</div>';
+			var $struct = $(struct);
+			$item.find('img').remove().end().append($struct).find('div.slice').prepend($(container + '<span class="overlay"></span>'));
+		});
+	</script>
+</body>
+
+</html>

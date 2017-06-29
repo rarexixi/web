@@ -1,0 +1,187 @@
+body {
+  padding: 0;
+  margin: 0;
+  background-color: #eceded;
+  font-size: 16px;
+  font-family: 'Segoe UI', Arial, 'Microsoft Yahei', Simsun, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+table {
+  border-collapse: collapse;
+  position: relative;
+}
+
+article, aside, footer, header, hgroup, main, nav, section, div {
+  position: relative;
+}
+
+a {
+  text-decoration: none;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+ul>li {
+  list-style: none;
+}
+
+img {
+  border: none;
+}
+
+
+/*输入框*/
+input[type='date'],
+input[type='datetime'],
+input[type='datetime-local'],
+input[type='email'],
+input[type='month'],
+input[type='number'],
+input[type='password'],
+input[type='text'],
+input[type='time'],
+input[type='url'],
+input[type='week'],
+select {
+    font-size: 1.0rem;
+    padding: 12px 8px;
+    border: 1px solid #dddddd;
+    outline: none;
+    font-family: 'Segoe UI', Arial, 'Microsoft Yahei', Simsun, sans-serif;
+}
+    input[type='date']:hover,
+    input[type='datetime']:hover,
+    input[type='datetime-local']:hover,
+    input[type='email']:hover,
+    input[type='month']:hover,
+    input[type='number']:hover,
+    input[type='password']:hover,
+    input[type='text']:hover,
+    input[type='time']:hover,
+    input[type='url']:hover,
+    input[type='week']:hover,
+    select:hover {
+        border: 1px solid #53BCFF;
+    }
+
+    input[type='date']:focus,
+    input[type='datetime']:focus,
+    input[type='datetime-local']:focus,
+    input[type='email']:focus,
+    input[type='month']:focus,
+    input[type='number']:focus,
+    input[type='password']:focus,
+    input[type='text']:focus,
+    input[type='time']:focus,
+    input[type='url']:focus,
+    input[type='week']:focus,
+    select:focus {
+        border: 1px solid #1170AD;
+    }
+
+textarea {
+    font-size: 1.0em;
+    padding: 8px 5px;
+    border: 1px solid #dddddd;
+    outline: none;
+    font-family: 'Segoe UI', Arial, 'Microsoft Yahei', Simsun, sans-serif;
+}
+    textarea:hover {
+        border: 1px solid #53BCFF;
+    }
+    textarea:focus {
+        border: 1px solid #1170AD;
+    }
+
+/*提交按钮*/
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+    font-size: 1.0rem;
+    padding: 13px 0;
+    border: none;
+    cursor: pointer;
+    font-family: 'Segoe UI', Arial, 'Microsoft Yahei', Simsun, sans-serif;
+    border: 1px solid;
+}
+
+.proportionate {
+  position: relative;
+}
+
+.proportionate:before {
+  content: "";
+  display: block;
+}
+
+.proportionate.p3_1:before {
+  padding-top: 33.333%;
+}
+
+.proportionate.p3_2:before {
+  padding-top: 66.666%;
+}
+
+.proportionate.p2_1:before {
+  padding-top: 50%;
+}
+
+.proportionate.p1_1:before {
+  padding-top: 100%;
+}
+
+.proportionate.p1_2:before {
+  padding-top: 200%;
+}
+
+.proportionate.p1_3:before {
+  padding-top: 300%;
+}
+
+.proportionate>.content {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.center-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.center-container>.content {
+  position: absolute;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.center-container2 {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #dcbaff;
+}
+.center-container2>.content  {
+    position: absolute;
+    margin: auto;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.display-flex {
+  display: flex;
+}
