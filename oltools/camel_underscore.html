@@ -49,7 +49,7 @@
                     var self = this;
 
                     self.getResult(function(source) {
-                        return source.replace(/[A-Z]+/g, function(word) {
+                        return source.replace(/[A-Z]+/gi, function(word) {
                             return word.toLowerCase();
                         });
                     });
@@ -58,7 +58,7 @@
                     var self = this;
 
                     self.getResult(function(source) {
-                        return source.replace(/[A-Z]+/g, function(word) {
+                        return source.replace(/[A-Z]+/gi, function(word) {
                             return word.toUpperCase();
                         });
                     });
@@ -70,9 +70,6 @@
                             return word.toUpperCase().substr(1);
                         });
                     });
-
-                    var source = self.getSource();
-                    self.result = source
                 },
                 underscoreToCamel2: function () {
                     var self = this;
