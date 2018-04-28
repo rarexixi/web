@@ -12,21 +12,33 @@
         <div class="row">
             <div class="col-12">
                 <h1>在线工具</h1>
-                <textarea v-model="source" class="w-100 h-100"></textarea>
-                <p>
-                    <div class="form-group form-inline">
-                        <label>前缀</label>
-                        <input v-model="prefix" type="text" placeholder="前缀" class="form-control"/>
+                    <div class="form-group row">
+                        <div class="col-12 col-md-4 col-lg-2"><label class="col-form-label">前缀</label></div>
+                        <div class="col-12 col-md-8 col-lg-10">
+                            <input v-model="prefix" type="text" placeholder="前缀" class="form-control" />
+                        </div>
                     </div>
-                    <input @click="toLowerCase" type="button" value="转小写" class="btn btn-info"/>
-                    <input @click="toUpperCase" type="button" value="转大写" class="btn btn-info"/>
-                    <input @click="underscoreToCamel" type="button" value="下划线转驼峰" class="btn btn-info"/>
-                    <input @click="underscoreToCamel2" type="button" value="下划线转驼峰首字母大写" class="btn btn-info"/>
-                    <input @click="camelToUnderscore" type="button" value="驼峰转下划线" class="btn btn-info"/>
-                    <input @click="camelToUnderscore2" type="button" value="驼峰转下划线连续大写字母变小写" class="btn btn-info"/>
-                    <input @click="reset" type="button" value="清空" class="btn btn-warning"/>
-                </p>
-                <pre class="w-100">{{result}}</pre>
+                    <div class="form-group row">
+                        <div class="col-12 col-md-4 col-lg-2"><label class="col-form-label">特殊词</label></div>
+                        <div class="col-12 col-md-8 col-lg-10">
+                            <input v-model="specialWords" type="text" placeholder="特殊词，例：ID，多个词间用英文逗号分隔" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input @click="toLowerCase" type="button" value="转小写" class="btn btn-info"/>
+                        <input @click="toUpperCase" type="button" value="转大写" class="btn btn-info"/>
+                        <input @click="underscoreToCamel" type="button" value="下划线转驼峰" class="btn btn-info"/>
+                        <input @click="underscoreToCamel2" type="button" value="下划线转驼峰首字母大写" class="btn btn-info"/>
+                        <input @click="camelToUnderscore" type="button" value="驼峰转下划线" class="btn btn-info"/>
+                        <input @click="camelToUnderscore2" type="button" value="驼峰转下划线连续大写字母变小写" class="btn btn-info"/>
+                        <input @click="reset" type="button" value="清空" class="btn btn-warning"/>
+                    </div>
+            </div>
+            <div class="col-12 col-md-6" style="height: 600px">
+                <textarea v-model="source" class="w-100 h-100"></textarea>
+            </div>
+            <div class="col-12 col-md-6" style="height: 600px">
+                <pre class="w-100 h-100">{{result}}</pre>
             </div>
         </div>
     </div>
@@ -40,7 +52,8 @@
             data: {
                 source: '',
                 result: '',
-                prefix: ''
+                prefix: '',
+                specialWords: ''
             },
             mounted: function () {
             },
@@ -88,6 +101,7 @@
                     var self = this;
 
                     self.getResult(function(source) {
+                        source = self.filterUpperSpecialWords(source);
                         return source.replace(/[A-Z]/g, function(word) {
                             return '_' + String.fromCharCode(word.charCodeAt(0) + 32);
                         }).replace(/^\s_/, function(word) {
@@ -99,6 +113,7 @@
                     var self = this;
 
                     self.getResult(function(source) {
+                        source = self.filterUpperSpecialWords(source);
                         return source.replace(/[A-Z]+/g, function(word) {
                             if (word.length == 1) {
                                 return '_' + String.fromCharCode(word.charCodeAt(0) + 32);
@@ -116,6 +131,20 @@
                     self.source = '';
                     self.result = '';
                 },
+                filterLowerSpecialWords: function() {
+                    return this.specialWords.toLowerCase().split(/,\s*/);
+                },
+                filterUpperSpecialWords: function(word) {
+                    var specialWords = this.specialWords.toUpperCase().split(/,\s*/);
+                    if (specialWords) {
+                        for (var i = 0; i < specialWords.length; i++) {
+                            word = word.replace(new RegExp(specialWords[i], 'g'), function(word) {
+                                return word.substr(0, 1) + word.substr(1).toLowerCase();
+                            });
+                        }
+                    }
+                    return word;
+                },
                 getResult: function(callback) {
                     var self = this;
                     if (self.source == '') return;
@@ -126,7 +155,7 @@
                         return callback(outerWord.replace(regex, function(word) {
                             return word.substr(0, 1);
                         }));
-                    });
+                    }).substr(1);
                 }
             }
         });
