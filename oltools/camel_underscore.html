@@ -21,6 +21,7 @@
                     <input @click="toLowerCase" type="button" value="转小写" class="btn btn-info"/>
                     <input @click="toUpperCase" type="button" value="转大写" class="btn btn-info"/>
                     <input @click="underscoreToCamel" type="button" value="下划线转驼峰" class="btn btn-info"/>
+                    <input @click="underscoreToCamel2" type="button" value="下划线转驼峰首字母大写" class="btn btn-info"/>
                     <input @click="camelToUnderscore" type="button" value="驼峰转下划线" class="btn btn-info"/>
                     <input @click="camelToUnderscore2" type="button" value="驼峰转下划线连续大写字母变小写" class="btn btn-info"/>
                     <input @click="reset" type="button" value="清空" class="btn btn-warning"/>
@@ -46,66 +47,89 @@
             methods: {
                 toLowerCase: function () {
                     var self = this;
-                    if (self.source == '') return;
 
-                    var source = self.getSource();
-                    self.result = source.toLowerCase();
+                    self.getResult(function(source) {
+                        return source.replace(/[A-Z]+/g, function(word) {
+                            return word.toLowerCase();
+                        });
+                    });
                 },
                 toUpperCase: function () {
                     var self = this;
-                    if (self.source == '') return;
 
-                    var source = self.getSource();
-                    self.result = source.toUpperCase();
+                    self.getResult(function(source) {
+                        return source.replace(/[A-Z]+/g, function(word) {
+                            return word.toUpperCase();
+                        });
+                    });
                 },
                 underscoreToCamel: function () {
                     var self = this;
-                    if (self.source == '') return;
+                    self.getResult(function(source) {
+                        return source.replace(/_[a-z]/gi, function(word) {
+                            return word.toUpperCase().substr(1);
+                        });
+                    });
 
                     var source = self.getSource();
-                    self.result = source.replace(/_[a-z]/g, function(word) {
-                        return String.fromCharCode(word.charCodeAt(1) - 32);
-                    }).replace(/_/g, '');
+                    self.result = source
+                },
+                underscoreToCamel2: function () {
+                    var self = this;
+                    self.getResult(function(source) {
+                        return source.replace(/_[a-z]/gi, function(word) {
+                            return word.toUpperCase().substr(1);
+                        }).replace(/^\s[a-z]/, function(word) {
+                            return word.toUpperCase();
+                        });
+                    });
+
+                    var source = self.getSource();
+                    self.result = source
                 },
                 camelToUnderscore: function () {
                     var self = this;
-                    if (self.source == '') return;
 
-                    var source = self.getSource();
-                    self.result = source.replace(/^[A-Z]+/, function (word) {
-                        var lowercase = word.toLowerCase();
-                        return lowercase.substr(0, lowercase.length - 1) + "_" + lowercase[lowercase.length - 1];
-                    }).replace(/[A-Z]/g, function(word) {
-                        return '_' + String.fromCharCode(word.charCodeAt(0) + 32);
+                    self.getResult(function(source) {
+                        return source.replace(/[A-Z]/g, function(word) {
+                            return '_' + String.fromCharCode(word.charCodeAt(0) + 32);
+                        }).replace(/^\s_/, function(word) {
+                            return word.substr(0, 1);
+                        });
                     });
                 },
                 camelToUnderscore2: function () {
                     var self = this;
-                    if (self.source == '') return;
 
-                    var source = self.getSource();
-                    self.result =  source.replace(/^[A-Z]+/, function (word) {
-                        var lowercase = word.toLowerCase();
-                        return lowercase.substr(0, lowercase.length - 1) + "_" + lowercase[lowercase.length - 1];
-                    }).replace(/[A-Z]+/g, function(word) {
-                        if (word.length == 1) {
-                            return '_' + String.fromCharCode(word.charCodeAt(0) + 32);
-                        } else {
-                            var lowercase = word.toLowerCase();
-                            return '_' + lowercase.substr(0, lowercase.length - 1) + "_" + lowercase[lowercase.length - 1];
-                        }
-                    });;
+                    self.getResult(function(source) {
+                        return source.replace(/[A-Z]+/g, function(word) {
+                            if (word.length == 1) {
+                                return '_' + String.fromCharCode(word.charCodeAt(0) + 32);
+                            } else {
+                                var lowercase = word.toLowerCase();
+                                return '_' + lowercase.substr(0, lowercase.length - 1) + "_" + lowercase[lowercase.length - 1];
+                            }
+                        }).replace(/^\s_/, function(word) {
+                            return word.substr(0, 1);
+                        });
+                    });
                 },
                 reset: function () {
                     var self = this;
                     self.source = '';
                     self.result = '';
                 },
-                getSource: function() {
+                getResult: function(callback) {
                     var self = this;
-                    var regex = new RegExp('\n' + self.prefix, 'gi');
-                    var source = self.source.replace(regex, '\n').replace(new RegExp("^" + self.prefix, 'i'), '');
-                    return source;
+                    if (self.source == '') return;
+
+                    var source = '\n' + self.source;
+                    var regex = new RegExp('\\s' + self.prefix, 'gi');
+                    self.result = source.replace(/\s[^\s]+/g, function (outerWord) {
+                        return callback(outerWord.replace(regex, function(word) {
+                            return word.substr(0, 1);
+                        }));
+                    });
                 }
             }
         });
