@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Image to Base64 converter</title>
+    <style>
+        h4 {
+            text-align: center;
+        }
+
+        .container {
+            position: relative;
+            margin: 10px auto;
+            width: 800px;
+            height: 500px;
+            overflow: hidden;
+            border: 1px solid #dcbaff;
+        }
+
+        .container>div {
+            width: 100%;
+            height: 100%;
+        }
+
+        .container img {
+            position: absolute;
+            max-width: 100%;
+            max-height: 100%;
+            margin: auto;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .container-result {
+            position: relative;
+            margin: 10px auto;
+            width: 800px;
+        }
+    </style>
+</head>
+
+<body>
+    <h4>Image to Base64 converter</h4>
+    <div class="container">
+        <div>
+            <img id="preview" src="" alt="Image preview" />
+        </div>
+    </div>
+    <div class="container-result">
+        <input id="upload" type="file" />
+        <button id="rotate">xuanzhuan</button>
+        <h4>Results</h4>
+        <textarea id="base64" style="width: 100%; height: 200px;"></textarea>
+    </div>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script>
+        document.getElementById('upload').onchange = function() {
+            var rImg =
+                /^image/i;
+            var file = $(this).get(0).files[0];
+            if (!rImg.test(file.type)) {
+                alert("请选择图片文件！");
+                return false;
+            }
+
+            var uploadimgpreview = $('#preview');
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var imgtmp = new Image();
+                imgtmp.src = e.target.result;
+                imgtmp.onload = function() {
+
+                    var canvas = document.createElement('canvas');
+                    var context = canvas.getContext('2d');
+
+                    //最大高宽设置1920
+                    if (imgtmp.naturalWidth > 1920 || imgtmp.naturalHeight > 1920) {
+                        if (imgtmp.naturalWidth > imgtmp.naturalHeight) {
+                            canvas.width = 1920;
+                            canvas.height = imgtmp.naturalHeight * 1920 / imgtmp.naturalWidth;
+                        } else {
+                            canvas.height = 1920;
+                            canvas.width = imgtmp.naturalWidth * 1920 / imgtmp.naturalHeight;
+                        }
+                    } else {
+                        canvas.width = imgtmp.naturalWidth;
+                        canvas.height = imgtmp.naturalHeight;
+                    }
+
+                    context.drawImage(imgtmp, 0, 0, canvas.width, canvas.height);
+                    var newImageData = canvas.toDataURL(file.type);
+
+                    document.getElementById('preview').src = newImageData;
+                    document.getElementById('base64').value = newImageData;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+        document.getElementById('rotate').onclick = function() {
+            var canvas = document.createElement('canvas');
+            var context = canvas.getContext('2d');
+
+            var imgtmp = document.getElementById('preview');
+            canvas.width = imgtmp.naturalWidth;
+            canvas.height = imgtmp.naturalHeight;
+            context.drawImage(imgtmp, 0, 0, canvas.width, canvas.height);
+            context.translate(canvas.width/2, canvas.height/2);
+            context.rotate(90 * Math.PI / 180);
+            context.translate(-canvas.width/2, -canvas.height/2);
+            context.drawImage(imgtmp,0,0, canvas.width, canvas.height);
+            context.restore();
+
+            var newImageData = canvas.toDataURL(imgtmp.type);
+            document.getElementById('preview').src = newImageData;
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,158 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Image to Base64 converter</title>
+    <style>
+        h4 {
+            text-align: center;
+        }
+
+        .container {
+            position: relative;
+            margin: 10px auto;
+            width: 800px;
+            height: 500px;
+            overflow: hidden;
+            border: 1px solid #dcbaff;
+        }
+
+        .container>div {
+            width: 100%;
+            height: 100%;
+        }
+
+        .container img {
+            position: absolute;
+            max-width: 100%;
+            max-height: 100%;
+            margin: auto;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .container-result {
+            position: relative;
+            margin: 10px auto;
+            width: 800px;
+        }
+    </style>
+</head>
+
+<body>
+    <h4>Image to Base64 converter</h4>
+    <div class="container">
+        <div>
+            <img id="preview" src="" alt="Image preview" />
+        </div>
+    </div>
+    <div class="container-result">
+        <input id="upload" type="file" />
+        <input id="angle" type="number" placeholder="rotate degree" />
+        <button id="rotateLeft">rotate left</button>
+        <button id="rotateRight">rotate right</button>
+        <h4>Results</h4>
+        <textarea id="base64" style="width: 100%; height: 200px;"></textarea>
+    </div>
+    <!-- <canvas id="canvas" width="300" height="300"></canvas> -->
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script>
+
+        var img_preview = {
+            img_file_id: '',
+            img_preview_id: '',
+            fileType: '',
+            canvasEdge: 0,
+            maxWidth: 1920,
+            baseImage: new Image(),
+            init: function (img_file_id, img_preview_id, options) {
+                var self = this;
+                self.img_file_id = img_file_id;
+                self.img_preview_id = img_preview_id;
+                document.getElementById(self.img_file_id).onchange = function() {
+                    var rImg = /^image/i;
+                    var file = $(this).get(0).files[0];
+                    if (!rImg.test(file.type)) {
+                        alert("请选择图片文件！");
+                        return false;
+                    }
+
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        var imgtmp = new Image();
+                        imgtmp.src = e.target.result;
+                        imgtmp.onload = function() {
+                            var imgTargetWidth, imgTargetHeight;
+                            var widthLonger = imgtmp.naturalWidth > imgtmp.naturalHeight;
+                            //最大高宽
+                            if (imgtmp.naturalWidth > self.maxWidth || imgtmp.naturalHeight > self.maxWidth) {
+                                if (widthLonger) {
+                                    imgTargetWidth = self.maxWidth;
+                                    imgTargetHeight = imgtmp.naturalHeight * self.maxWidth / imgtmp.naturalWidth;
+                                } else {
+                                    imgTargetWidth = imgtmp.naturalWidth * self.maxWidth / imgtmp.naturalHeight;
+                                    imgTargetHeight = self.maxWidth;
+                                }
+                            } else {
+                                imgTargetWidth = imgtmp.naturalWidth;
+                                imgTargetHeight = imgtmp.naturalHeight;
+                            }
+                            self.canvasEdge = Math.sqrt(Math.pow(imgTargetWidth, 2) + Math.pow(imgTargetHeight, 2));
+
+                            var canvas = document.createElement('canvas');
+                            var context = canvas.getContext("2d");
+                            canvas.width = self.canvasEdge;
+                            canvas.height = self.canvasEdge;
+                            context.drawImage(imgtmp, (self.canvasEdge - imgTargetWidth) / 2, (self.canvasEdge - imgTargetHeight) / 2, imgTargetWidth, imgTargetHeight);
+                            var newImageData = canvas.toDataURL(file.type);
+
+                            document.getElementById(self.img_preview_id).src = newImageData;
+                            self.baseImage.src = newImageData;
+                            self.fileType = file.type;
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                };
+            },
+            rotate: function (angle) {
+                var self = this;
+                angle = angle % 360;
+
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext("2d");
+                canvas.width = self.canvasEdge;
+                canvas.height = self.canvasEdge;
+                context.setTransform(1, 0, 0, 1, 0, 0);
+                context.translate(self.canvasEdge / 2, self.canvasEdge / 2);
+                context.rotate(angle * Math.PI / 180);
+                context.drawImage(self.baseImage, -self.canvasEdge / 2, -self.canvasEdge / 2, self.canvasEdge, self.canvasEdge);
+                document.getElementById(self.img_preview_id).src = canvas.toDataURL(self.fileType);
+            }
+        }
+        img_preview.init('upload', 'preview');
+        var rotateDegree = 0;
+        document.getElementById('rotateRight').onclick = function() {
+            if (document.getElementById('angle').value != '') {
+                rotateDegree += parseInt(document.getElementById('angle').value);
+            } else {
+                rotateDegree += 30;
+            }
+            img_preview.rotate(rotateDegree);
+        }
+        document.getElementById('rotateLeft').onclick = function() {
+            if (document.getElementById('angle').value != '') {
+                rotateDegree -= parseInt(document.getElementById('angle').value);
+            } else {
+                rotateDegree -= 30;
+            }
+            img_preview.rotate(rotateDegree);
+        }
+
+    </script>
+</body>
+
+</html>
