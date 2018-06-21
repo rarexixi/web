@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Image to Base64 converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.css" />
+    <link rel="stylesheet" href="./resources/css/base.css">
+    <link rel="stylesheet" href="./resources/css/center-test.css">
+    <style>
+        h4 {
+            text-align: center;
+        }
+
+        .container-result {
+            position: relative;
+            margin: 10px auto;
+            width: 800px;
+        }
+    </style>
+</head>
+
+<body>
+    <h4>Image to Base64 converter</h4>
+    <div class="container-result">
+        <div class="center-container" style="height: 600px; padding-top: 20px;">
+            <img id="preview" src="" alt="Image preview" />
+        </div>
+        <input id="upload" type="file" />
+        <input id="load-online-img" type="button" value="load online image" />
+        <input id="btn-result" type="button" value="get result">
+        <h4>Results</h4>
+        <div class="center-container">
+            <img id="result" class="content" src="" alt="">
+        </div>
+        <textarea id="base64" style="width: 100%; height: 1000px;"></textarea>
+    </div>
+    <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.js"></script>
+    <script>
+        var CropImg = function(viewport_width, viewport_height, img_preview_container_id, options) {
+            var self = this;
+            var cropApp;
+            var default_options = {
+                ratio: 2
+            }
+
+            if (options) {
+                $.extend(default_options, options);
+            }
+
+            self.readFile = function(file) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    var imgtmp = new Image();
+                    imgtmp.src = e.target.result;
+                    imgtmp.onload = function() {
+                        var canvas = document.createElement('canvas');
+                        var context = canvas.getContext('2d');
+                        canvas.width = imgtmp.naturalWidth;
+                        canvas.height = imgtmp.naturalHeight;
+                        context.drawImage(imgtmp, 0, 0, canvas.width, canvas.height);
+                        var newImageData = canvas.toDataURL(file.type);
+                        preview(newImageData);
+                    }
+                };
+                reader.readAsDataURL(file);
+            }
+            self.loadOnlineImage = function (url) {
+                preview(url);
+            }
+            self.getResult = function (callback) {
+                var size = 'viewport';
+    			cropApp.croppie('result', {
+    				type: 'canvas',
+    				size: {
+                    	width: viewport_width,
+                    	height: viewport_height
+                    },
+                    format: 'jpeg',
+                    quality: 0.95
+    			}).then(function (resp) {
+                    if (callback) {
+                        callback(resp);
+                    }
+    			});
+            }
+
+            function preview(img) {
+                $('#' + img_preview_container_id).html('<img id="preview" src="" alt="Image preview" />');
+                document.getElementById('preview').src = img;
+                cropApp = $('#preview').croppie({
+                    viewport: {
+                    	width: viewport_width,
+                    	height: viewport_height
+                    },
+                    boundary: {
+                    	width: viewport_width * default_options.ratio,
+                    	height: viewport_height * default_options.ratio
+                    }
+                });
+            }
+        }
+
+        var cropImg = new CropImg(450, 300, 'preview-container', {
+            ratio: 1.6
+        });
+
+        $('#upload').on('change', function() {
+            var rImg = /^image/i;
+            var file = $(this).get(0).files[0];
+            if (!rImg.test(file.type)) {
+                alert("请选择图片文件！");
+                return false;
+            }
+            cropImg.readFile(file);
+        });
+
+        $('#load-online-img').on('click', function () {
+            cropImg.loadOnlineImage('https://img1001.pocoimg.cn/image/poco/works/94/2013/1204/10/173896660201312041058302530281854404_000_173896660_H1920.jpg');
+        });
+
+		$('#btn-result').on('click', function() {
+            cropImg.getResult(function(resp) {
+                $('#result').attr('src', resp);
+                $('#base64').val(resp);
+
+                $.ajax({
+                    type: "POST",
+                    url: 'http://localhost:8080/car/admin/upload/uploadimgbybase64.do',
+                    cache: false,
+                    async: true,
+                    data: {
+                        base64: resp
+                    },
+                    success: function (data) {
+                        console.log(data)
+                    },
+                    error: function () {
+                        console.log('error')
+                    },
+                })
+            });
+		});
+    </script>
+</body>
+
+</html>
