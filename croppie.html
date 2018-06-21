@@ -125,22 +125,6 @@
             cropImg.getResult(function(resp) {
                 $('#result').attr('src', resp);
                 $('#base64').val(resp);
-
-                $.ajax({
-                    type: "POST",
-                    url: 'http://localhost:8080/car/admin/upload/uploadimgbybase64.do',
-                    cache: false,
-                    async: true,
-                    data: {
-                        base64: resp
-                    },
-                    success: function (data) {
-                        console.log(data)
-                    },
-                    error: function () {
-                        console.log('error')
-                    },
-                })
             });
 		});
     </script>
