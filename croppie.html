@@ -43,7 +43,12 @@
             var self = this;
             var cropApp;
             var default_options = {
-                ratio: 2
+                viewport: {
+                    width: 600,
+                    height: 400
+                },
+                boundaryRatio:1.5,
+                targetRatio: 1
             }
 
             if (options) {
@@ -74,9 +79,9 @@
                 var size = 'viewport';
     			cropApp.croppie('result', {
     				type: 'canvas',
-    				size: {
-                    	width: viewport_width,
-                    	height: viewport_height
+                    size: {
+                        width: default_options.viewport.width * default_options.boundaryRatio,
+                        height: default_options.viewport.height * default_options.boundaryRatio
                     },
                     format: 'jpeg',
                     quality: 0.95
@@ -91,13 +96,11 @@
                 $('#' + img_preview_container_id).html('<img id="preview" src="" alt="Image preview" />');
                 document.getElementById('preview').src = img;
                 cropApp = $('#preview').croppie({
-                    viewport: {
-                    	width: viewport_width,
-                    	height: viewport_height
-                    },
+                    showZoomer: true,
+                    viewport: default_options.viewport,
                     boundary: {
-                    	width: viewport_width * default_options.ratio,
-                    	height: viewport_height * default_options.ratio
+                        width: default_options.viewport.width * default_options.boundaryRatio,
+                        height: default_options.viewport.height * default_options.boundaryRatio
                     }
                 });
             }
