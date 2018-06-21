@@ -24,12 +24,17 @@
 <body>
     <h4>Image to Base64 converter</h4>
     <div class="container-result">
-        <div class="center-container" style="height: 600px; padding-top: 20px;">
+        <div class="center-container" id="preview-container" style="height: 600px; padding-top: 20px;">
             <img id="preview" src="" alt="Image preview" />
         </div>
         <input id="upload" type="file" />
         <input id="load-online-img" type="button" value="load online image" />
         <input id="btn-result" type="button" value="get result">
+        <input id="width" type="text" placeholder="width">
+        <input id="height" type="text" placeholder="height">
+        <input id="change-viewport" type="button" value="change viewport">
+        <input id="rotate-left" type="button" value="rotate left">
+        <input id="rotate-right" type="button" value="rotate right">
         <h4>Results</h4>
         <div class="center-container">
             <img id="result" class="content" src="" alt="">
@@ -39,7 +44,7 @@
     <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.2/croppie.min.js"></script>
     <script>
-        var CropImg = function(viewport_width, viewport_height, img_preview_container_id, options) {
+        var CropImg = function(img_preview_container_id, options) {
             var self = this;
             var cropApp;
             var default_options = {
@@ -50,11 +55,9 @@
                 boundaryRatio:1.5,
                 targetRatio: 1
             }
+            change(options);
 
-            if (options) {
-                $.extend(default_options, options);
-            }
-
+            self.imageSrc = '';
             self.readFile = function(file) {
                 var reader = new FileReader();
                 reader.onload = function(e) {
@@ -67,21 +70,23 @@
                         canvas.height = imgtmp.naturalHeight;
                         context.drawImage(imgtmp, 0, 0, canvas.width, canvas.height);
                         var newImageData = canvas.toDataURL(file.type);
-                        preview(newImageData);
+                        self.imageSrc = newImageData;
+                        preview();
                     }
                 };
                 reader.readAsDataURL(file);
             }
             self.loadOnlineImage = function (url) {
-                preview(url);
+                self.imageSrc = url;
+                preview();
             }
             self.getResult = function (callback) {
                 var size = 'viewport';
-    			cropApp.croppie('result', {
+    			cropApp.result({
     				type: 'canvas',
                     size: {
-                        width: default_options.viewport.width * default_options.boundaryRatio,
-                        height: default_options.viewport.height * default_options.boundaryRatio
+                        width: default_options.viewport.width * default_options.targetRatio,
+                        height: default_options.viewport.height * default_options.targetRatio
                     },
                     format: 'jpeg',
                     quality: 0.95
@@ -91,23 +96,40 @@
                     }
     			});
             }
+            self.rotate = function (degree) {
+                cropApp.rotate(degree);
+            }
+            self.change = change;
 
-            function preview(img) {
+            function preview() {
+                if (!self.imageSrc) return;
                 $('#' + img_preview_container_id).html('<img id="preview" src="" alt="Image preview" />');
-                document.getElementById('preview').src = img;
-                cropApp = $('#preview').croppie({
+                document.getElementById('preview').src = self.imageSrc;
+                cropApp = new Croppie(document.getElementById('preview'), {
                     showZoomer: true,
                     viewport: default_options.viewport,
+                    enableOrientation: true,
                     boundary: {
                         width: default_options.viewport.width * default_options.boundaryRatio,
                         height: default_options.viewport.height * default_options.boundaryRatio
                     }
                 });
             }
+            function change(options) {
+                if (options) {
+                    $.extend(default_options, options);
+                }
+                preview();
+            }
         }
 
-        var cropImg = new CropImg(450, 300, 'preview-container', {
-            ratio: 1.6
+        var cropImg = new CropImg('preview-container', {
+            boundaryRatio:1.5,
+            targetRatio: 2,
+            viewport: {
+                width: 450,
+                height: 300
+            }
         });
 
         $('#upload').on('change', function() {
@@ -120,6 +142,19 @@
             cropImg.readFile(file);
         });
 
+        $('#change-viewport').on('click', function () {
+            var width = $('#width').val();
+            var height = $('#height').val();
+            if (width && height) {
+                cropImg.change({
+                    viewport: {
+                        width: width,
+                        height: height
+                    }
+                });
+            }
+        });
+
         $('#load-online-img').on('click', function () {
             cropImg.loadOnlineImage('https://img1001.pocoimg.cn/image/poco/works/94/2013/1204/10/173896660201312041058302530281854404_000_173896660_H1920.jpg');
         });
@@ -130,6 +165,14 @@
                 $('#base64').val(resp);
             });
 		});
+
+        $('#rotate-left').on('click', function () {
+            cropImg.rotate(90);
+        });
+
+        $('#rotate-right').on('click', function () {
+            cropImg.rotate(-90);
+        });
     </script>
 </body>
 
