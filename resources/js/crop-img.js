@@ -81,7 +81,7 @@ var CropImg = function(img_preview_container_id, options) {
             width: default_options.viewport.width * default_options.targetRatio,
             height: default_options.viewport.height * default_options.targetRatio
         };
-        $('#' + img_preview_container_id).height(boundarySize.height);
+        // $('#' + img_preview_container_id).height(boundarySize.height);
         preview();
     }
 }
