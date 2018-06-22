@@ -56,6 +56,9 @@ var CropImg = function(img_preview_container_id, options) {
 
     function preview() {
         if (!self.imageSrc) return;
+        
+        delete self.cropApp;
+
         $('#' + img_preview_container_id).html('<img id="preview" src="" alt="Image preview" />');
         var imgPreview = document.getElementById('preview');
         imgPreview.src = self.imageSrc;
